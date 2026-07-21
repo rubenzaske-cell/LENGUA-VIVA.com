@@ -11,6 +11,7 @@ import { FamilyId } from '../data/content';
 export interface SurveyAnswers {
   ageRange?: string;
   studiedBefore?: string;
+  studiedWhich?: string; // pregunta de seguimiento si ya estudió una lengua
   dailyGoal?: string; // '5' | '10' | '15' | '20'
   motivations: string[];
 }

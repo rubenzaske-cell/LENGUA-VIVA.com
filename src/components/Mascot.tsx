@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { Animated, Easing, Image, StyleSheet, Text, View } from 'react-native';
 import { CONDOR_PNG, CONDOR_SIZE, YAKU_PNG, YAKU_SIZE } from './mascotArt';
+import YakuAnimado from './YakuAnimado';
 
 // Yaku (delfín rosado) y el Cóndor bebé — arte oficial del proyecto.
 
@@ -53,6 +54,11 @@ export default function Mascot({ kind, mood = 'happy', size = 96, bounce = true 
 
   const art = ART[kind];
   const decor = MOOD_DECOR[mood];
+
+  // Modo reposo de Yaku: usa la animación oficial (saludo y guiño).
+  if (kind === 'yaku' && bounce && mood === 'happy') {
+    return <YakuAnimado size={size * 2.2} />;
+  }
 
   return (
     <Animated.View style={{ transform: [{ translateY }] }}>
