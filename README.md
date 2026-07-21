@@ -30,6 +30,25 @@ npm run android  # en Android (requiere Expo Go o emulador)
 npm run ios      # en iOS (requiere Expo Go o simulador)
 ```
 
+### 🌐 Compilar la web (instalable en cualquier dispositivo)
+
+```bash
+npx expo export --platform web   # genera la carpeta dist/ lista para publicar
+```
+
+La misma base de código corre en **Android, iOS y web**. En la web:
+
+- **Responsive**: en teléfonos y navegadores angostos ocupa toda la pantalla;
+  en escritorio o tablet se encuadra en un marco tipo teléfono centrado
+  (`src/components/ResponsiveShell.tsx`).
+- **PWA instalable**: incluye `manifest.webmanifest`, `theme-color`,
+  íconos y `apple-touch-icon` (carpeta `public/`), así que puede
+  "Agregarse a la pantalla de inicio" en Android e iOS y abrirse a pantalla
+  completa como una app nativa.
+
+El contenido de `dist/` es estático y se puede subir a cualquier hosting
+(Netlify, Vercel, GitHub Pages, Cloudflare Pages, etc.).
+
 ## 📁 Estructura
 
 ```

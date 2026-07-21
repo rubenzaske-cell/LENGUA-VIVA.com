@@ -4,6 +4,7 @@ import { View } from 'react-native';
 import { NavigationContext, Route } from './src/navigation';
 import { AppStateProvider, useAppState } from './src/state/store';
 import { darkTheme, lightTheme } from './src/theme';
+import ResponsiveShell from './src/components/ResponsiveShell';
 import AuthScreen from './src/screens/AuthScreen';
 import FamilyScreen from './src/screens/FamilyScreen';
 import LadderScreen from './src/screens/LadderScreen';
@@ -56,10 +57,10 @@ function Root() {
 
   return (
     <NavigationContext.Provider value={{ route, go: setRoute }}>
-      <View style={{ flex: 1 }}>
+      <ResponsiveShell theme={theme}>
         {render()}
         <StatusBar style={theme.name === 'dark' ? 'light' : 'dark'} />
-      </View>
+      </ResponsiveShell>
     </NavigationContext.Provider>
   );
 }
