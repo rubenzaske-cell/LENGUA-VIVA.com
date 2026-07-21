@@ -5,8 +5,19 @@ import { Theme } from '../theme';
 // En teléfonos (nativo o navegador angosto) la app ocupa toda la pantalla.
 // En pantallas grandes (web de escritorio o tablet) se encuadra en un marco
 // tipo teléfono centrado, para que no se estire de borde a borde.
+//
+// Modo pantalla completa: si el contenedor define la bandera global
+// `__LV_FULLSCREEN__` (p. ej. una build embebida en un HTML autónomo), la app
+// ocupa siempre toda la pantalla, sin marco, en cualquier tamaño.
 const PHONE_WIDTH = 440;
 const WIDE_BREAKPOINT = 700;
+
+function fullscreenForced(): boolean {
+  return (
+    typeof globalThis !== 'undefined' &&
+    (globalThis as { __LV_FULLSCREEN__?: boolean }).__LV_FULLSCREEN__ === true
+  );
+}
 
 export default function ResponsiveShell({
   theme,
@@ -16,7 +27,8 @@ export default function ResponsiveShell({
   children: React.ReactNode;
 }) {
   const { width, height } = useWindowDimensions();
-  const isWide = Platform.OS === 'web' && width >= WIDE_BREAKPOINT;
+  const isWide =
+    Platform.OS === 'web' && width >= WIDE_BREAKPOINT && !fullscreenForced();
 
   if (!isWide) {
     return <View style={styles.fill}>{children}</View>;
