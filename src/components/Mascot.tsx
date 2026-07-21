@@ -1,9 +1,8 @@
 import React, { useEffect, useRef } from 'react';
-import { Animated, Easing, StyleSheet, Text, View } from 'react-native';
-import { SvgXml } from 'react-native-svg';
-import { CONDOR_SVG, YAKU_SVG } from './mascotArt';
+import { Animated, Easing, Image, StyleSheet, Text, View } from 'react-native';
+import { CONDOR_PNG, CONDOR_SIZE, YAKU_PNG, YAKU_SIZE } from './mascotArt';
 
-// Yaku (delfín rosado) y el Cóndor bebé, en arte vectorial.
+// Yaku (delfín rosado) y el Cóndor bebé — arte oficial del proyecto.
 
 export type MascotKind = 'yaku' | 'condor';
 export type MascotMood = 'happy' | 'celebrating' | 'encouraging' | 'thinking';
@@ -15,10 +14,9 @@ const MOOD_DECOR: Record<MascotMood, string> = {
   thinking: '📝',
 };
 
-// Relación de aspecto de cada SVG (alto / ancho de su viewBox).
-const RATIO: Record<MascotKind, number> = {
-  yaku: 256 / 200,
-  condor: 230 / 200,
+const ART: Record<MascotKind, { uri: string; ratio: number }> = {
+  yaku: { uri: YAKU_PNG, ratio: YAKU_SIZE.height / YAKU_SIZE.width },
+  condor: { uri: CONDOR_PNG, ratio: CONDOR_SIZE.height / CONDOR_SIZE.width },
 };
 
 interface Props {
@@ -53,15 +51,16 @@ export default function Mascot({ kind, mood = 'happy', size = 96, bounce = true 
     return () => loop.stop();
   }, [bounce, translateY]);
 
+  const art = ART[kind];
   const decor = MOOD_DECOR[mood];
 
   return (
     <Animated.View style={{ transform: [{ translateY }] }}>
-      <View style={{ width: size, height: size * RATIO[kind] }}>
-        <SvgXml
-          xml={kind === 'yaku' ? YAKU_SVG : CONDOR_SVG}
-          width="100%"
-          height="100%"
+      <View style={{ width: size, height: size * art.ratio }}>
+        <Image
+          source={{ uri: art.uri }}
+          style={{ width: '100%', height: '100%' }}
+          resizeMode="contain"
         />
         {decor !== '' && (
           <Text style={[styles.decor, { fontSize: Math.max(16, size * 0.24) }]}>{decor}</Text>
