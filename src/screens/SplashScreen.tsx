@@ -15,9 +15,19 @@ export default function SplashScreen({ theme }: { theme: Theme }) {
   const titleY = useRef(new Animated.Value(12)).current;
   const subtitleOpacity = useRef(new Animated.Value(0)).current;
   const dolphinY = useRef(new Animated.Value(80)).current;
+  const dolphinScale = useRef(new Animated.Value(1)).current;
 
   // La cámara observa en segundo plano: si saludas con la mano, Yaku responde.
   useSaludoCamara(() => setSaludando(true));
+
+  // Al saludar, Yaku crece con un resorte suave; al terminar, vuelve a su tamaño.
+  useEffect(() => {
+    Animated.spring(dolphinScale, {
+      toValue: saludando ? 1.18 : 1,
+      friction: 5,
+      useNativeDriver: true,
+    }).start();
+  }, [saludando, dolphinScale]);
 
   useEffect(() => {
     // Yaku emerge del agua, luego aparecen título y subtítulo.
@@ -58,7 +68,9 @@ export default function SplashScreen({ theme }: { theme: Theme }) {
 
       {/* Ambas animaciones comparten recorte y tamaño: el cambio es invisible.
           La burbuja va superpuesta para no desplazar a Yaku. */}
-      <Animated.View style={{ transform: [{ translateY: dolphinY }] }}>
+      <Animated.View
+        style={{ transform: [{ translateY: dolphinY }, { scale: dolphinScale }] }}
+      >
         <View>
           {saludando ? (
             <SpriteAnimado

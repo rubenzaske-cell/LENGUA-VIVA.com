@@ -28,9 +28,11 @@ export default function useSaludoCamara(onSaludo: () => void, activo = true) {
     video.muted = true;
     video.playsInline = true;
 
+    // Rejilla de análisis más fina: una mano lejana ocupa pocos píxeles,
+    // así que a mayor resolución de análisis, mayor alcance de detección.
     const canvas = doc.createElement('canvas');
-    const W = 64;
-    const H = 48;
+    const W = 112;
+    const H = 84;
     canvas.width = W;
     canvas.height = H;
     const ctx = canvas.getContext('2d', { willReadFrequently: true });
@@ -42,7 +44,7 @@ export default function useSaludoCamara(onSaludo: () => void, activo = true) {
     let enfriamiento = 0; // no re-disparar mientras Yaku aún saluda
 
     nav.mediaDevices
-      .getUserMedia({ video: { width: 320, height: 240, facingMode: 'user' } })
+      .getUserMedia({ video: { width: 640, height: 480, facingMode: 'user' } })
       .then((s: any) => {
         if (cancelado) {
           s.getTracks().forEach((t: any) => t.stop());
@@ -64,16 +66,19 @@ export default function useSaludoCamara(onSaludo: () => void, activo = true) {
               const j = i * 4;
               const g1 = (data[j] + data[j + 1] + data[j + 2]) / 3;
               const g0 = (prev[j] + prev[j + 1] + prev[j + 2]) / 3;
-              if (Math.abs(g1 - g0) > 28) {
+              // umbral de cambio más bajo = detecta movimientos más sutiles
+              if (Math.abs(g1 - g0) > 20) {
                 count++;
                 sumX += i % W;
               }
             }
-            if (count > 35) {
+            // basta con que ~0.2% de la imagen se mueva (una mano a varios
+            // metros sigue superando este mínimo)
+            if (count > 18) {
               const cx = sumX / count;
               if (lastCx !== null) {
                 const delta = cx - lastCx;
-                if (Math.abs(delta) > 1.5) {
+                if (Math.abs(delta) > 1.0) {
                   const nuevoDir = delta > 0 ? 1 : -1;
                   if (dir !== 0 && nuevoDir !== dir) cambios.push(ahora);
                   dir = nuevoDir;
@@ -81,8 +86,9 @@ export default function useSaludoCamara(onSaludo: () => void, activo = true) {
               }
               lastCx = cx;
             }
-            cambios = cambios.filter((t) => ahora - t < 1700);
-            // 3 cambios de dirección en ~1.7s = alguien está saludando
+            cambios = cambios.filter((t) => ahora - t < 2200);
+            // 3 cambios de dirección en ~2.2s = alguien está saludando
+            // (ventana amplia: un saludo lejano se ve más lento en cámara)
             if (cambios.length >= 3) {
               cambios = [];
               enfriamiento = ahora + 6000;
