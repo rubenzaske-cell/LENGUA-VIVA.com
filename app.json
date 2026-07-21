@@ -1,0 +1,17 @@
+{
+  "expo": {
+    "name": "Lengua Viva",
+    "slug": "lengua-viva",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "backgroundColor": "#1F5B38",
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {}
+  }
+}
