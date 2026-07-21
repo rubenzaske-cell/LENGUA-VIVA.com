@@ -74,6 +74,9 @@ export default function SplashScreen({ theme }: { theme: Theme }) {
         onPress={() => go({ name: 'auth' })}
         style={styles.cta}
       />
+      <Text onPress={() => go({ name: 'saludo' })} style={styles.saludoLink}>
+        👋 Saluda a Yaku con tu cámara
+      </Text>
     </View>
   );
 }
@@ -116,5 +119,11 @@ const styles = StyleSheet.create({
   cta: {
     marginTop: spacing.xl,
     alignSelf: 'stretch',
+  },
+  saludoLink: {
+    marginTop: spacing.md,
+    color: '#EAF7EC',
+    fontSize: 14,
+    textDecorationLine: 'underline',
   },
 });

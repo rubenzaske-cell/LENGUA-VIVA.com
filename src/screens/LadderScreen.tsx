@@ -49,6 +49,9 @@ export default function LadderScreen({ theme }: { theme: Theme }) {
         <Text style={[styles.stat, { color: theme.text }]} numberOfLines={1}>
           {lang.name}
         </Text>
+        <Pressable onPress={() => go({ name: 'saludo' })} hitSlop={8}>
+          <Text style={styles.stat}>👋</Text>
+        </Pressable>
       </View>
 
       <ScrollView ref={scrollRef} contentContainerStyle={styles.scroll}>
