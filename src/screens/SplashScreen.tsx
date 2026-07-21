@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Animated, Easing, StyleSheet, Text, View } from 'react-native';
+import { Animated, Easing, Pressable, StyleSheet, Text, View } from 'react-native';
 import Mascot from '../components/Mascot';
 import SpriteAnimado from '../components/SpriteAnimado';
 import { YAKU_SALUDO } from '../components/yakuSaludoAnim';
@@ -18,7 +18,15 @@ export default function SplashScreen({ theme }: { theme: Theme }) {
   const dolphinScale = useRef(new Animated.Value(1)).current;
 
   // La cámara observa en segundo plano: si saludas con la mano, Yaku responde.
-  useSaludoCamara(() => setSaludando(true));
+  // (Solo funciona en contexto seguro: HTTPS o localhost.)
+  const { estado: camara, activar: activarCamara } = useSaludoCamara(() =>
+    setSaludando(true)
+  );
+
+  // Saludo manual: tocar a Yaku siempre funciona, aun sin cámara.
+  const saludar = () => {
+    if (!saludando) setSaludando(true);
+  };
 
   // Al saludar, Yaku crece con un resorte suave; al terminar, vuelve a su tamaño.
   useEffect(() => {
@@ -71,7 +79,7 @@ export default function SplashScreen({ theme }: { theme: Theme }) {
       <Animated.View
         style={{ transform: [{ translateY: dolphinY }, { scale: dolphinScale }] }}
       >
-        <View>
+        <Pressable onPress={saludar} accessibilityRole="button" accessibilityLabel="Saludar a Yaku">
           {saludando ? (
             <SpriteAnimado
               anim={YAKU_SALUDO}
@@ -87,7 +95,7 @@ export default function SplashScreen({ theme }: { theme: Theme }) {
               <Text style={styles.burbujaTexto}>¡Hola! 👋</Text>
             </View>
           )}
-        </View>
+        </Pressable>
       </Animated.View>
 
       {/* Río estilizado */}
@@ -104,9 +112,24 @@ export default function SplashScreen({ theme }: { theme: Theme }) {
       <Animated.Text style={[styles.subtitle, { opacity: subtitleOpacity }]}>
         Aprende las lenguas originarias del Perú de una manera divertida.
       </Animated.Text>
-      <Animated.Text style={[styles.hint, { opacity: subtitleOpacity }]}>
-        Salúdalo con tu mano 👋
-      </Animated.Text>
+      <Animated.View style={{ opacity: subtitleOpacity, alignItems: 'center' }}>
+        {camara === 'activa' ? (
+          <Text style={styles.hint}>📷 ¡Salúdalo con tu mano frente a la cámara! 👋</Text>
+        ) : (
+          <Text style={styles.hint}>Toca a Yaku para saludarlo 👋</Text>
+        )}
+
+        {(camara === 'bloqueada' || camara === 'inactiva') && (
+          <Pressable onPress={activarCamara} style={styles.camBtn}>
+            <Text style={styles.camBtnText}>📷 Activar saludo con cámara</Text>
+          </Pressable>
+        )}
+        {camara === 'bloqueada' && (
+          <Text style={styles.camNote}>
+            La cámara solo funciona con la app abierta por HTTPS o localhost.
+          </Text>
+        )}
+      </Animated.View>
 
       <Button
         title="Comenzar"
@@ -158,6 +181,27 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: '#CFE9D4',
     textAlign: 'center',
+  },
+  camBtn: {
+    marginTop: spacing.sm,
+    backgroundColor: '#FFFFFF22',
+    borderColor: '#FFFFFF88',
+    borderWidth: 1,
+    borderRadius: 20,
+    paddingHorizontal: spacing.md,
+    paddingVertical: 8,
+  },
+  camBtnText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '700',
+  },
+  camNote: {
+    marginTop: spacing.xs,
+    fontSize: 11,
+    color: '#CFE9D4CC',
+    textAlign: 'center',
+    maxWidth: 300,
   },
   cta: {
     marginTop: spacing.xl,

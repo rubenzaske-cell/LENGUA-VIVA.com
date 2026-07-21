@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Platform } from 'react-native';
 
 // Detección de saludo con la cámara, sin interfaz propia: pide permiso al
@@ -6,17 +6,49 @@ import { Platform } from 'react-native';
 // cuando detecta un vaivén horizontal (una mano diciendo "hola").
 // Todo el análisis ocurre en el dispositivo; el video nunca sale de él.
 //
+// IMPORTANTE (contexto seguro): los navegadores solo permiten la cámara en un
+// "contexto seguro" (HTTPS o localhost). Al abrir la app como archivo local
+// (file://) o dentro de un iframe protegido, getUserMedia queda bloqueado y el
+// permiso nunca aparece. Por eso el hook expone un estado y una función
+// activar() para reintentar con un toque del usuario (gesto), que es la forma
+// más fiable de que el navegador muestre el permiso.
+//
 // Fase futura: reemplazar por un detector de manos (MediaPipe Hands) para
 // distinguir una mano real de cualquier otro movimiento oscilante.
 
-export default function useSaludoCamara(onSaludo: () => void, activo = true) {
+export type EstadoCamara =
+  | 'inactiva' // aún no se ha pedido / se cerró
+  | 'pidiendo' // esperando respuesta al permiso
+  | 'activa' // cámara encendida y observando
+  | 'bloqueada' // permiso denegado o no disponible (p. ej. file://)
+  | 'no-soportada'; // el dispositivo/navegador no ofrece cámara
+
+export interface ControlCamara {
+  estado: EstadoCamara;
+  activar: () => void;
+}
+
+export default function useSaludoCamara(onSaludo: () => void): ControlCamara {
   const onSaludoRef = useRef(onSaludo);
   onSaludoRef.current = onSaludo;
 
-  useEffect(() => {
-    if (!activo || Platform.OS !== 'web') return;
+  const [estado, setEstado] = useState<EstadoCamara>('inactiva');
+  const cleanupRef = useRef<(() => void) | null>(null);
+
+  const activar = useCallback(() => {
+    if (Platform.OS !== 'web') {
+      setEstado('no-soportada');
+      return;
+    }
     const nav: any = typeof navigator !== 'undefined' ? navigator : null;
-    if (!nav?.mediaDevices?.getUserMedia) return;
+    if (!nav?.mediaDevices?.getUserMedia) {
+      setEstado('no-soportada');
+      return;
+    }
+    // Ya hay una sesión activa: no reabrir.
+    if (cleanupRef.current) return;
+
+    setEstado('pidiendo');
 
     let stream: any = null;
     let timer: any = null;
@@ -43,6 +75,15 @@ export default function useSaludoCamara(onSaludo: () => void, activo = true) {
     let cambios: number[] = [];
     let enfriamiento = 0; // no re-disparar mientras Yaku aún saluda
 
+    const detener = () => {
+      cancelado = true;
+      if (timer) clearInterval(timer);
+      if (stream) stream.getTracks().forEach((t: any) => t.stop());
+      video.remove();
+      cleanupRef.current = null;
+    };
+    cleanupRef.current = detener;
+
     nav.mediaDevices
       .getUserMedia({ video: { width: 640, height: 480, facingMode: 'user' } })
       .then((s: any) => {
@@ -53,6 +94,7 @@ export default function useSaludoCamara(onSaludo: () => void, activo = true) {
         stream = s;
         video.srcObject = s;
         video.play?.().catch(() => {});
+        setEstado('activa');
 
         timer = setInterval(() => {
           if (video.readyState < 2) return;
@@ -99,14 +141,21 @@ export default function useSaludoCamara(onSaludo: () => void, activo = true) {
         }, 100);
       })
       .catch(() => {
-        // sin permiso o sin cámara: Yaku simplemente se queda en reposo
+        // Sin permiso o sin cámara (denegado, file://, iframe sin permiso...):
+        // Yaku se queda en reposo y el usuario puede saludarlo con un toque.
+        if (!cancelado) setEstado('bloqueada');
+        cleanupRef.current = null;
       });
+  }, []);
 
+  // Intento automático al iniciar (como antes). Si el contexto lo bloquea,
+  // el estado pasa a 'bloqueada' y la interfaz ofrece reintentar con un toque.
+  useEffect(() => {
+    activar();
     return () => {
-      cancelado = true;
-      if (timer) clearInterval(timer);
-      if (stream) stream.getTracks().forEach((t: any) => t.stop());
-      video.remove();
+      cleanupRef.current?.();
     };
-  }, [activo]);
+  }, [activar]);
+
+  return { estado, activar };
 }
