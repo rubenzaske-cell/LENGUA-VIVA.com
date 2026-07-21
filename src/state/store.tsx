@@ -33,6 +33,7 @@ export interface Settings {
   sounds: boolean;
   audioSpeed: number;
   notifications: boolean;
+  cameraSaludo: boolean; // saludar a Yaku con la cámara (en todas las pantallas)
 }
 
 export interface AppState {
@@ -66,7 +67,13 @@ const initialState: AppState = {
   lastPracticeDay: null,
   minutesStudied: 0,
   badges: [],
-  settings: { darkMode: false, sounds: true, audioSpeed: 1, notifications: true },
+  settings: {
+    darkMode: false,
+    sounds: true,
+    audioSpeed: 1,
+    notifications: true,
+    cameraSaludo: true,
+  },
 };
 
 type Action =

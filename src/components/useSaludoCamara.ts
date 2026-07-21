@@ -28,7 +28,10 @@ export interface ControlCamara {
   activar: () => void;
 }
 
-export default function useSaludoCamara(onSaludo: () => void): ControlCamara {
+export default function useSaludoCamara(
+  onSaludo: () => void,
+  enabled = true
+): ControlCamara {
   const onSaludoRef = useRef(onSaludo);
   onSaludoRef.current = onSaludo;
 
@@ -150,12 +153,18 @@ export default function useSaludoCamara(onSaludo: () => void): ControlCamara {
 
   // Intento automático al iniciar (como antes). Si el contexto lo bloquea,
   // el estado pasa a 'bloqueada' y la interfaz ofrece reintentar con un toque.
+  // Si se desactiva (enabled=false), se detiene la cámara.
   useEffect(() => {
+    if (!enabled) {
+      cleanupRef.current?.();
+      setEstado('inactiva');
+      return;
+    }
     activar();
     return () => {
       cleanupRef.current?.();
     };
-  }, [activar]);
+  }, [activar, enabled]);
 
   return { estado, activar };
 }

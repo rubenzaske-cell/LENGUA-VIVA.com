@@ -3,6 +3,8 @@ import { StatusBar } from 'expo-status-bar';
 import { View } from 'react-native';
 import { NavigationContext, Route } from './src/navigation';
 import { AppStateProvider, useAppState } from './src/state/store';
+import { SaludoProvider } from './src/components/SaludoContext';
+import YakuFlotante from './src/components/YakuFlotante';
 import { darkTheme, lightTheme } from './src/theme';
 import ResponsiveShell from './src/components/ResponsiveShell';
 import AuthScreen from './src/screens/AuthScreen';
@@ -56,12 +58,20 @@ function Root() {
   };
 
   return (
-    <NavigationContext.Provider value={{ route, go: setRoute }}>
-      <ResponsiveShell theme={theme}>
-        {render()}
-        <StatusBar style={theme.name === 'dark' ? 'light' : 'dark'} />
-      </ResponsiveShell>
-    </NavigationContext.Provider>
+    <SaludoProvider enabled={state.settings.cameraSaludo !== false}>
+      <NavigationContext.Provider value={{ route, go: setRoute }}>
+        <ResponsiveShell theme={theme}>
+          {render()}
+          {/* Yaku flotante que responde al saludo en todas las pantallas.
+              En la bienvenida ya hay un Yaku grande, y en la lección se omite
+              para no tapar las respuestas (ahí Yaku aparece en el diálogo). */}
+          {route.name !== 'splash' && route.name !== 'lesson' && (
+            <YakuFlotante theme={theme} />
+          )}
+          <StatusBar style={theme.name === 'dark' ? 'light' : 'dark'} />
+        </ResponsiveShell>
+      </NavigationContext.Provider>
+    </SaludoProvider>
   );
 }
 

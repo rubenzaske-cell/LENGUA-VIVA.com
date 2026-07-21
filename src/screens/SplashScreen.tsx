@@ -1,32 +1,31 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Animated, Easing, Pressable, StyleSheet, Text, View } from 'react-native';
 import Mascot from '../components/Mascot';
 import SpriteAnimado from '../components/SpriteAnimado';
 import { YAKU_SALUDO } from '../components/yakuSaludoAnim';
-import useSaludoCamara from '../components/useSaludoCamara';
+import { useSaludo } from '../components/SaludoContext';
 import { Button } from '../components/UI';
 import { useNavigation } from '../navigation';
 import { spacing, Theme } from '../theme';
 
 export default function SplashScreen({ theme }: { theme: Theme }) {
   const { go } = useNavigation();
-  const [saludando, setSaludando] = useState(false);
   const titleOpacity = useRef(new Animated.Value(0)).current;
   const titleY = useRef(new Animated.Value(12)).current;
   const subtitleOpacity = useRef(new Animated.Value(0)).current;
   const dolphinY = useRef(new Animated.Value(80)).current;
   const dolphinScale = useRef(new Animated.Value(1)).current;
 
-  // La cámara observa en segundo plano: si saludas con la mano, Yaku responde.
-  // (Solo funciona en contexto seguro: HTTPS o localhost.)
-  const { estado: camara, activar: activarCamara } = useSaludoCamara(() =>
-    setSaludando(true)
-  );
-
-  // Saludo manual: tocar a Yaku siempre funciona, aun sin cámara.
-  const saludar = () => {
-    if (!saludando) setSaludando(true);
-  };
+  // El saludo se maneja globalmente (la misma cámara sirve a todas las
+  // pantallas). Aquí solo consumimos el estado para que el Yaku grande
+  // responda. La cámara solo funciona en contexto seguro (HTTPS o localhost).
+  const {
+    saludando,
+    saludar,
+    terminarSaludo,
+    estadoCamara: camara,
+    activarCamara,
+  } = useSaludo();
 
   // Al saludar, Yaku crece con un resorte suave; al terminar, vuelve a su tamaño.
   useEffect(() => {
@@ -85,7 +84,7 @@ export default function SplashScreen({ theme }: { theme: Theme }) {
               anim={YAKU_SALUDO}
               size={185}
               loop={false}
-              onEnd={() => setSaludando(false)}
+              onEnd={terminarSaludo}
             />
           ) : (
             <Mascot kind="yaku" size={185} />

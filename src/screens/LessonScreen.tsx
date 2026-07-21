@@ -516,7 +516,7 @@ const styles = StyleSheet.create({
     marginTop: spacing.md,
     marginBottom: spacing.sm,
   },
-  introEmoji: { fontSize: 120, lineHeight: 140, textAlign: 'center' },
+  introEmoji: { fontSize: 132, lineHeight: 152, textAlign: 'center' },
   // Cuadrícula 2×2 de imágenes grandes para "elige la imagen".
   imageGrid: {
     flexDirection: 'row',
@@ -532,7 +532,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: spacing.md,
   },
-  imageOptionEmoji: { fontSize: 76, lineHeight: 92, textAlign: 'center' },
+  imageOptionEmoji: { fontSize: 96, lineHeight: 112, textAlign: 'center' },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
   chip: {
     paddingHorizontal: spacing.md,

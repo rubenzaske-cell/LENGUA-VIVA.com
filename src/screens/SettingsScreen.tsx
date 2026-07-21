@@ -49,6 +49,16 @@ export default function SettingsScreen({ theme }: { theme: Theme }) {
           value={settings.notifications}
           onChange={(v) => dispatch({ type: 'SET_SETTINGS', settings: { notifications: v } })}
         />
+        <Row
+          label="📷  Saludar a Yaku con la cámara"
+          value={settings.cameraSaludo !== false}
+          onChange={(v) => dispatch({ type: 'SET_SETTINGS', settings: { cameraSaludo: v } })}
+        />
+        <Text style={{ fontSize: 12, color: theme.textMuted, marginTop: -4, marginBottom: spacing.sm, paddingHorizontal: 4 }}>
+          Usa la cámara frontal para que Yaku responda tu saludo. El video se
+          analiza solo en tu dispositivo y nunca se guarda ni se envía. Requiere
+          abrir la app por HTTPS o localhost.
+        </Text>
 
         <Card theme={theme} style={styles.row}>
           <Text style={{ fontSize: 16, color: theme.text, flex: 1 }}>🐢  Velocidad de audio</Text>
