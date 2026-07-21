@@ -11,11 +11,23 @@ Aplicación multiplataforma (Android, iOS y web) construida con [Expo / React Na
 - **Onboarding narrativo** con diálogo letra por letra.
 - **Encuesta de personalización**: edad, experiencia previa, meta diaria y motivación.
 - **Selección de familia lingüística**: Amazonía (guía: Yaku 🐬) o Andes (guía: Cóndor bebé 🐥).
-- **Lenguas con contenido**: Shipibo-Konibo y Quechua (Cusco-Collao). Las demás aparecen como "Próximamente".
-- **Escalera del Conocimiento**: 20 niveles verticales, con niveles culturales cada 4 escalones.
-- **Ejercicios**: vocabulario nuevo, elegir traducción, elegir imagen, traducción inversa, ordenar palabras y relacionar columnas.
+- **Currículo real (módulo introductorio ~3 meses)**: lecciones temáticas
+  ordenadas. **Quechua (Cusco-Collao): 12 lecciones** (saludos, nombres,
+  familia, números 1–10, animales, colores, comida, naturaleza, cuerpo,
+  acciones y despedidas) y **Shipibo-Konibo: 8 lecciones**. Las demás lenguas
+  aparecen como "Próximamente".
+- **Escalera del Conocimiento**: ruta vertical con una lección por escalón,
+  cada una con su tema, su conversación y, en varias, una cápsula cultural.
+- **Ejercicios**: vocabulario nuevo, elegir traducción, elegir imagen,
+  traducción inversa, ordenar palabras y relacionar columnas.
+- **💬 Lección de diálogo (nuevo)**: al terminar de practicar, dos personajes
+  (Tupaq y Sisa en los Andes; Yaku y Rama en la Amazonía) **conversan usando
+  exactamente las palabras aprendidas**, con la traducción al lado y las
+  palabras del vocabulario resaltadas. Así se ve cómo se usan en una
+  conversación real. Puede leerse paso a paso o reproducirse solo.
 - **IA adaptativa (regla básica)**: los ejercicios fallados se refuerzan al final de la lección.
-- **Cápsulas culturales**: kené, Ani Xeati, Pachamama, Inti Raymi, y más.
+- **Cápsulas culturales**: kené, el bufeo, animales sagrados, la yupana, el
+  cóndor, la papa, el runasimi vivo, y más.
 - **Gamificación**: XP, racha diaria, insignias.
 - **Perfil** con estadísticas y progreso por lengua.
 - **Configuración**: modo oscuro, sonidos, velocidad de audio, notificaciones.
@@ -57,15 +69,26 @@ src/
   theme.ts               # paleta (tierra, selva, andes) claro/oscuro
   navigation.tsx         # router ligero por contexto
   state/store.tsx        # estado global + persistencia
-  data/content.ts        # lenguas, vocabulario y cápsulas culturales
-  components/            # Mascotas, botones, barras de progreso
+  data/content.ts        # currículo: lecciones (vocabulario + diálogo +
+                         # cápsula cultural) por lengua
+  components/            # Mascotas, botones, DialogueView (lección de diálogo)
   screens/               # Splash, Auth, Onboarding, Encuesta, Familia,
                          # Escalera, Lección, Perfil, Configuración
 ```
 
+Cada lección (`Lesson`) reúne su vocabulario, su **diálogo** (dos personajes,
+`Dialogue`) y, cuando corresponde, una cápsula cultural. La Escalera del
+Conocimiento recorre las lecciones en orden.
+
 ## ⚠️ Contenido lingüístico
 
-El vocabulario incluido es **contenido de ejemplo para el prototipo**. Antes de cualquier publicación debe ser validado con lingüistas especializados y hablantes nativos de las comunidades correspondientes (DIGEIBIRA, universidades, organizaciones indígenas), como indica la especificación del producto.
+El vocabulario y los diálogos usan **formas de alta frecuencia y ampliamente
+documentadas** (el quechua sigue la variante Cusco-Collao). Aun así, antes de
+una publicación oficial todo el contenido debe **validarse con lingüistas y
+hablantes nativos** de las comunidades correspondientes (DIGEIBIRA,
+universidades, organizaciones indígenas), como indica la especificación del
+producto. En particular, los diálogos en shipibo-konibo se mantienen simples y
+deben revisarse con hablantes de la lengua.
 
 ## 🗺️ Próximos pasos
 

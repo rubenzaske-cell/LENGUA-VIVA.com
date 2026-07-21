@@ -1,7 +1,7 @@
 import React from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Card, ProgressBar } from '../components/UI';
-import { getLanguage, TOTAL_LEVELS } from '../data/content';
+import { getLanguage, totalLevels } from '../data/content';
 import { useNavigation } from '../navigation';
 import { useAppState } from '../state/store';
 import { spacing, Theme } from '../theme';
@@ -45,7 +45,7 @@ export default function ProfileScreen({ theme }: { theme: Theme }) {
         {Object.entries(state.progress).map(([langId, prog]) => {
           const lang = getLanguage(langId);
           if (!lang) return null;
-          const pct = Math.min(1, (prog.level - 1) / TOTAL_LEVELS);
+          const pct = Math.min(1, (prog.level - 1) / Math.max(1, totalLevels(lang)));
           return (
             <Card key={langId} theme={theme} style={{ marginBottom: spacing.sm }}>
               <View style={styles.langRow}>

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Mascot from '../components/Mascot';
-import { cultureForLevel, getLanguage, TOTAL_LEVELS } from '../data/content';
+import { cultureForLevel, getLanguage, lessonForLevel, totalLevels } from '../data/content';
 import { useNavigation } from '../navigation';
 import { useAppState } from '../state/store';
 import { radius, spacing, Theme } from '../theme';
@@ -21,14 +21,15 @@ export default function LadderScreen({ theme }: { theme: Theme }) {
 
   const isAmazonia = state.family !== 'andes';
   const mascot = isAmazonia ? 'yaku' : 'condor';
+  const total = lang ? totalLevels(lang) : 0;
 
   useEffect(() => {
-    // Centrar el nivel actual: la lista va de arriba (20) hacia abajo (1).
-    const fromTop = (TOTAL_LEVELS - currentLevel) * STEP_HEIGHT;
+    // Centrar el nivel actual: la lista va de arriba (la cima) hacia abajo (1).
+    const fromTop = (total - currentLevel) * STEP_HEIGHT;
     setTimeout(() => {
       scrollRef.current?.scrollTo({ y: Math.max(0, fromTop - 200), animated: false });
     }, 50);
-  }, [currentLevel]);
+  }, [currentLevel, total]);
 
   if (!lang) {
     return (
@@ -38,7 +39,7 @@ export default function LadderScreen({ theme }: { theme: Theme }) {
     );
   }
 
-  const levels = Array.from({ length: TOTAL_LEVELS }, (_, i) => TOTAL_LEVELS - i);
+  const levels = Array.from({ length: total }, (_, i) => total - i);
 
   return (
     <View style={[{ flex: 1 }, { backgroundColor: isAmazonia ? '#DFEEDD' : '#E8E4F0' }]}>
@@ -65,6 +66,7 @@ export default function LadderScreen({ theme }: { theme: Theme }) {
           const completed = level < currentLevel;
           const isCurrent = level === currentLevel;
           const culture = cultureForLevel(lang, level);
+          const lesson = lessonForLevel(lang, level);
           // Zigzag suave para dar sensación de escalera.
           const offset = level % 2 === 0 ? 40 : -40;
 
@@ -89,8 +91,11 @@ export default function LadderScreen({ theme }: { theme: Theme }) {
                 <Text style={styles.stepLevel}>
                   {completed ? '✓' : unlocked ? level : '🔒'}
                 </Text>
-                <Text style={styles.stepLabel}>
-                  {culture ? '📚 Nivel cultural' : `Nivel ${level}`}
+                <Text style={styles.stepLabel} numberOfLines={1}>
+                  {lesson ? lesson.title : `Nivel ${level}`}
+                </Text>
+                <Text style={styles.stepIcons}>
+                  💬{culture ? ' 📚' : ''}
                 </Text>
               </Pressable>
               {isCurrent && (
@@ -145,13 +150,21 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   step: {
-    width: 170,
+    width: 200,
     paddingVertical: 12,
+    paddingHorizontal: spacing.sm,
     borderRadius: radius.lg,
     alignItems: 'center',
   },
   stepLevel: { fontSize: 22, fontWeight: '900', color: '#FFF' },
-  stepLabel: { fontSize: 12, color: '#FFFFFFDD', marginTop: 2 },
+  stepLabel: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#FFFFFFEE',
+    marginTop: 2,
+    textAlign: 'center',
+  },
+  stepIcons: { fontSize: 12, marginTop: 2 },
   mascotOnStep: {
     position: 'absolute',
     right: -40,

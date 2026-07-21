@@ -1,11 +1,13 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Mascot from '../components/Mascot';
+import DialogueView from '../components/DialogueView';
 import { Button, Card, ProgressBar } from '../components/UI';
 import {
   cultureForLevel,
+  dialogueForLevel,
   getLanguage,
-  TOTAL_LEVELS,
+  totalLevels,
   VocabItem,
   vocabForLevel,
 } from '../data/content';
@@ -94,7 +96,9 @@ export default function LessonScreen({ theme, level }: { theme: Theme; level: nu
   const [index, setIndex] = useState(0);
   const [feedback, setFeedback] = useState<'correct' | 'wrong' | null>(null);
   const [correctCount, setCorrectCount] = useState(0);
-  const [phase, setPhase] = useState<'exercises' | 'culture' | 'done'>('exercises');
+  const [phase, setPhase] = useState<'exercises' | 'dialogue' | 'culture' | 'done'>(
+    'exercises'
+  );
   const errorsRef = useRef(0);
 
   // Estado de ejercicios interactivos
@@ -103,6 +107,7 @@ export default function LessonScreen({ theme, level }: { theme: Theme; level: nu
   const [matched, setMatched] = useState<string[]>([]);
 
   const culture = cultureForLevel(lang, level);
+  const dialogue = dialogueForLevel(lang, level);
   const exercise = queue[index];
   const total = queue.length;
 
@@ -126,7 +131,19 @@ export default function LessonScreen({ theme, level }: { theme: Theme; level: nu
     setMatched([]);
     if (index < queue.length - 1) {
       setIndex(index + 1);
+    } else if (dialogue) {
+      // Al terminar los ejercicios: la conversación de la vida real.
+      setPhase('dialogue');
     } else if (culture) {
+      setPhase('culture');
+    } else {
+      finish();
+    }
+  };
+
+  // Después del diálogo: cápsula cultural si existe, si no, terminar.
+  const afterDialogue = () => {
+    if (culture) {
       setPhase('culture');
     } else {
       finish();
@@ -143,7 +160,7 @@ export default function LessonScreen({ theme, level }: { theme: Theme; level: nu
         badge: { id: 'first-level', name: 'Primer escalón', emoji: '🌱', earnedAt: today },
       });
     }
-    if (level === TOTAL_LEVELS) {
+    if (level === totalLevels(lang)) {
       dispatch({
         type: 'ADD_BADGE',
         badge: { id: 'summit', name: 'Cima del conocimiento', emoji: '⭐', earnedAt: today },
@@ -179,11 +196,37 @@ export default function LessonScreen({ theme, level }: { theme: Theme; level: nu
         <Text style={[styles.doneStat, { color: theme.textMuted }]}>
           ⭐ +{correctCount * 10 + 20} XP · 🔥 Racha: {state.streak} día(s)
         </Text>
+        {dialogue && (
+          <Text style={[styles.doneSub, { color: theme.textMuted }]}>
+            💬 Practicaste una conversación real con {dialogue.a.name} y {dialogue.b.name}.
+          </Text>
+        )}
         <Button
           title="Volver a la escalera"
           theme={theme}
           onPress={() => go({ name: 'ladder' })}
           style={{ alignSelf: 'stretch', marginTop: spacing.xl }}
+        />
+      </View>
+    );
+  }
+
+  if (phase === 'dialogue' && dialogue) {
+    return (
+      <View style={[styles.container, { backgroundColor: theme.background }]}>
+        <View style={styles.topBar}>
+          <Pressable onPress={() => go({ name: 'ladder' })}>
+            <Text style={{ fontSize: 22, color: theme.textMuted }}>✕</Text>
+          </Pressable>
+          <Text style={{ marginLeft: spacing.md, fontWeight: '800', color: theme.text }}>
+            Así se usa en la vida real
+          </Text>
+        </View>
+        <DialogueView
+          dialogue={dialogue}
+          vocab={vocab}
+          theme={theme}
+          onDone={afterDialogue}
         />
       </View>
     );
@@ -465,6 +508,7 @@ const styles = StyleSheet.create({
   },
   doneTitle: { fontSize: 26, fontWeight: '900', marginTop: spacing.lg },
   doneStat: { fontSize: 16, marginTop: spacing.sm },
+  doneSub: { fontSize: 14, marginTop: spacing.sm, textAlign: 'center', maxWidth: 320 },
   cultureContainer: { padding: spacing.lg, paddingTop: spacing.xl * 2, alignItems: 'center' },
   cultureTag: { fontSize: 13, fontWeight: '800', letterSpacing: 1, marginTop: spacing.md },
   cultureTitle: { fontSize: 24, fontWeight: '900', textAlign: 'center', marginTop: spacing.xs },
