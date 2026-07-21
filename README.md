@@ -50,6 +50,11 @@ El vocabulario incluido es **contenido de ejemplo para el prototipo**. Antes de 
 
 ## 🗺️ Próximos pasos
 
+- **Saludo con la cámara**: cuando la cámara detecte que el usuario saluda con la
+  mano ("hola"), se activará la animación de Yaku saludando con la aleta
+  (`assets/mascotas/yaku-saludo-sprites.png`, ya procesada y lista). Requiere
+  detección de gestos de mano (p. ej. MediaPipe Hands en web / Vision en nativo).
+
 - Arte final de Yaku y el Cóndor bebé (reemplazar placeholders).
 - Audio nativo y ejercicios de pronunciación con micrófono.
 - Autenticación real (OAuth Google/Apple) y sincronización en la nube.
