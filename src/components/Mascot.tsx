@@ -17,8 +17,8 @@ const MOOD_DECOR: Record<MascotMood, string> = {
 
 // Relación de aspecto de cada SVG (alto / ancho de su viewBox).
 const RATIO: Record<MascotKind, number> = {
-  yaku: 244 / 200,
-  condor: 260 / 200,
+  yaku: 256 / 200,
+  condor: 230 / 200,
 };
 
 interface Props {
