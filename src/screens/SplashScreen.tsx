@@ -56,22 +56,26 @@ export default function SplashScreen({ theme }: { theme: Theme }) {
         <Text style={styles.ambient}>🌿🦜🌺</Text>
       </View>
 
+      {/* Ambas animaciones comparten recorte y tamaño: el cambio es invisible.
+          La burbuja va superpuesta para no desplazar a Yaku. */}
       <Animated.View style={{ transform: [{ translateY: dolphinY }] }}>
-        {saludando ? (
-          <View style={{ alignItems: 'center' }}>
-            <View style={styles.burbuja}>
-              <Text style={styles.burbujaTexto}>¡Hola! 👋</Text>
-            </View>
+        <View>
+          {saludando ? (
             <SpriteAnimado
               anim={YAKU_SALUDO}
-              size={165}
+              size={185}
               loop={false}
               onEnd={() => setSaludando(false)}
             />
-          </View>
-        ) : (
-          <Mascot kind="yaku" size={150} />
-        )}
+          ) : (
+            <Mascot kind="yaku" size={185} />
+          )}
+          {saludando && (
+            <View style={styles.burbuja}>
+              <Text style={styles.burbujaTexto}>¡Hola! 👋</Text>
+            </View>
+          )}
+        </View>
       </Animated.View>
 
       {/* Río estilizado */}
@@ -148,11 +152,13 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
   },
   burbuja: {
+    position: 'absolute',
+    top: -14,
+    alignSelf: 'center',
     backgroundColor: '#FFFFFF',
     borderRadius: 18,
     paddingHorizontal: 16,
     paddingVertical: 8,
-    marginBottom: 6,
   },
   burbujaTexto: {
     fontSize: 17,

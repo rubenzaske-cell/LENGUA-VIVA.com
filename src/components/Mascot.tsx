@@ -56,9 +56,10 @@ export default function Mascot({ kind, mood = 'happy', size = 96, bounce = true 
   const decor = MOOD_DECOR[mood];
 
   // Modo reposo de Yaku: la animación oficial (balanceo, guiño y risa).
-  // El fotograma está recortado al personaje, así que el ancho coincide.
+  // El fotograma comparte recorte con la animación de saludo (algo más ancho
+  // que el personaje), así que se compensa para mantener el tamaño visual.
   if (kind === 'yaku' && bounce && mood === 'happy') {
-    return <YakuAnimado size={size} />;
+    return <YakuAnimado size={size * 1.22} />;
   }
 
   return (
