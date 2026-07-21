@@ -44,7 +44,7 @@ export default function SplashScreen({ theme }: { theme: Theme }) {
   }, [dolphinY, titleOpacity, titleY, subtitleOpacity]);
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.jungleDeep }]}>
+    <View style={[styles.container, { backgroundColor: '#2BB24C' }]}>
       <View style={styles.sky}>
         <Text style={styles.ambient}>🌿🦜🌺</Text>
       </View>
