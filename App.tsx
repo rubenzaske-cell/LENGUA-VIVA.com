@@ -10,7 +10,6 @@ import LadderScreen from './src/screens/LadderScreen';
 import LessonScreen from './src/screens/LessonScreen';
 import OnboardingScreen from './src/screens/OnboardingScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
-import SaludoScreen from './src/screens/SaludoScreen';
 import SettingsScreen from './src/screens/SettingsScreen';
 import SplashScreen from './src/screens/SplashScreen';
 import SurveyScreen from './src/screens/SurveyScreen';
@@ -52,8 +51,6 @@ function Root() {
         return <ProfileScreen theme={theme} />;
       case 'settings':
         return <SettingsScreen theme={theme} />;
-      case 'saludo':
-        return <SaludoScreen theme={theme} />;
     }
   };
 

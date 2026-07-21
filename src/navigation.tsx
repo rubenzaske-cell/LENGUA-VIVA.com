@@ -9,8 +9,7 @@ export type Route =
   | { name: 'ladder' }
   | { name: 'lesson'; level: number }
   | { name: 'profile' }
-  | { name: 'settings' }
-  | { name: 'saludo' };
+  | { name: 'settings' };
 
 export interface Navigation {
   route: Route;

@@ -1,16 +1,23 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, StyleSheet, Text, View } from 'react-native';
 import Mascot from '../components/Mascot';
+import SpriteAnimado from '../components/SpriteAnimado';
+import { YAKU_SALUDO } from '../components/yakuSaludoAnim';
+import useSaludoCamara from '../components/useSaludoCamara';
 import { Button } from '../components/UI';
 import { useNavigation } from '../navigation';
 import { spacing, Theme } from '../theme';
 
 export default function SplashScreen({ theme }: { theme: Theme }) {
   const { go } = useNavigation();
+  const [saludando, setSaludando] = useState(false);
   const titleOpacity = useRef(new Animated.Value(0)).current;
   const titleY = useRef(new Animated.Value(12)).current;
   const subtitleOpacity = useRef(new Animated.Value(0)).current;
   const dolphinY = useRef(new Animated.Value(80)).current;
+
+  // La cámara observa en segundo plano: si saludas con la mano, Yaku responde.
+  useSaludoCamara(() => setSaludando(true));
 
   useEffect(() => {
     // Yaku emerge del agua, luego aparecen título y subtítulo.
@@ -50,7 +57,21 @@ export default function SplashScreen({ theme }: { theme: Theme }) {
       </View>
 
       <Animated.View style={{ transform: [{ translateY: dolphinY }] }}>
-        <Mascot kind="yaku" size={140} />
+        {saludando ? (
+          <View style={{ alignItems: 'center' }}>
+            <View style={styles.burbuja}>
+              <Text style={styles.burbujaTexto}>¡Hola! 👋</Text>
+            </View>
+            <SpriteAnimado
+              anim={YAKU_SALUDO}
+              size={165}
+              loop={false}
+              onEnd={() => setSaludando(false)}
+            />
+          </View>
+        ) : (
+          <Mascot kind="yaku" size={150} />
+        )}
       </Animated.View>
 
       {/* Río estilizado */}
@@ -67,6 +88,9 @@ export default function SplashScreen({ theme }: { theme: Theme }) {
       <Animated.Text style={[styles.subtitle, { opacity: subtitleOpacity }]}>
         Aprende las lenguas originarias del Perú de una manera divertida.
       </Animated.Text>
+      <Animated.Text style={[styles.hint, { opacity: subtitleOpacity }]}>
+        Salúdalo con tu mano 👋
+      </Animated.Text>
 
       <Button
         title="Comenzar"
@@ -74,9 +98,6 @@ export default function SplashScreen({ theme }: { theme: Theme }) {
         onPress={() => go({ name: 'auth' })}
         style={styles.cta}
       />
-      <Text onPress={() => go({ name: 'saludo' })} style={styles.saludoLink}>
-        👋 Saluda a Yaku con tu cámara
-      </Text>
     </View>
   );
 }
@@ -116,14 +137,26 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     maxWidth: 320,
   },
+  hint: {
+    marginTop: spacing.xs,
+    fontSize: 13,
+    color: '#CFE9D4',
+    textAlign: 'center',
+  },
   cta: {
     marginTop: spacing.xl,
     alignSelf: 'stretch',
   },
-  saludoLink: {
-    marginTop: spacing.md,
-    color: '#EAF7EC',
-    fontSize: 14,
-    textDecorationLine: 'underline',
+  burbuja: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 18,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    marginBottom: 6,
+  },
+  burbujaTexto: {
+    fontSize: 17,
+    fontWeight: '800',
+    color: '#2A4A32',
   },
 });
