@@ -260,32 +260,61 @@ export default function LessonScreen({ theme, level }: { theme: Theme; level: nu
         return (
           <View style={styles.centerBlock}>
             <Text style={[styles.prompt, { color: theme.textMuted }]}>📖 Palabra nueva</Text>
-            <Text style={{ fontSize: 72 }}>{exercise.item.emoji}</Text>
+            <View
+              style={[
+                styles.introImage,
+                { backgroundColor: theme.surfaceAlt, borderColor: theme.border },
+              ]}
+            >
+              <Text style={styles.introEmoji}>{exercise.item.emoji}</Text>
+            </View>
             <Text style={[styles.word, { color: theme.text }]}>{exercise.item.word}</Text>
             <Text style={[styles.translation, { color: theme.textMuted }]}>{exercise.item.es}</Text>
             <Button title="Continuar" theme={theme} onPress={advance} style={{ alignSelf: 'stretch', marginTop: spacing.xl }} />
           </View>
         );
-      case 'choose-es':
-      case 'choose-word':
       case 'choose-image': {
+        const correct = exercise.item.emoji;
+        return (
+          <View>
+            <Text style={[styles.prompt, { color: theme.text }]}>
+              Elige la imagen de “{exercise.item.word}”
+            </Text>
+            <View style={styles.imageGrid}>
+              {exercise.options.map((opt, i) => (
+                <Pressable
+                  key={`${opt}-${i}`}
+                  onPress={() => answer(opt === correct)}
+                  disabled={!!feedback}
+                  style={[
+                    styles.imageOption,
+                    {
+                      backgroundColor: theme.surface,
+                      borderColor:
+                        feedback && opt === correct ? theme.success : theme.border,
+                    },
+                  ]}
+                >
+                  <Text style={styles.imageOptionEmoji}>{opt}</Text>
+                </Pressable>
+              ))}
+            </View>
+          </View>
+        );
+      }
+      case 'choose-es':
+      case 'choose-word': {
         const prompt =
           exercise.kind === 'choose-es'
             ? `¿Qué significa “${exercise.item.word}”?`
-            : exercise.kind === 'choose-word'
-            ? `¿Cómo se dice “${exercise.item.es}”?`
-            : `Elige la imagen de “${exercise.item.word}”`;
+            : `¿Cómo se dice “${exercise.item.es}”?`;
         const correct =
-          exercise.kind === 'choose-es'
-            ? exercise.item.es
-            : exercise.kind === 'choose-word'
-            ? exercise.item.word
-            : exercise.item.emoji;
+          exercise.kind === 'choose-es' ? exercise.item.es : exercise.item.word;
         return (
           <View>
             <Text style={[styles.prompt, { color: theme.text }]}>{prompt}</Text>
-            {exercise.options.map((opt) => (
-              <Pressable key={opt} onPress={() => answer(opt === correct)} disabled={!!feedback}>
+            {exercise.options.map((opt, i) => (
+              <Pressable key={`${opt}-${i}`} onPress={() => answer(opt === correct)} disabled={!!feedback}>
                 <Card
                   theme={theme}
                   style={{
@@ -297,15 +326,7 @@ export default function LessonScreen({ theme, level }: { theme: Theme; level: nu
                         : theme.border,
                   }}
                 >
-                  <Text
-                    style={{
-                      fontSize: exercise.kind === 'choose-image' ? 34 : 18,
-                      color: theme.text,
-                      textAlign: exercise.kind === 'choose-image' ? 'center' : 'left',
-                    }}
-                  >
-                    {opt}
-                  </Text>
+                  <Text style={{ fontSize: 18, color: theme.text }}>{opt}</Text>
                 </Card>
               </Pressable>
             ))}
@@ -482,8 +503,36 @@ const styles = StyleSheet.create({
   centerBlock: { alignItems: 'center', paddingTop: spacing.lg },
   topBar: { flexDirection: 'row', alignItems: 'center', marginBottom: spacing.lg },
   prompt: { fontSize: 20, fontWeight: '700', marginBottom: spacing.lg },
-  word: { fontSize: 34, fontWeight: '900', marginTop: spacing.md },
-  translation: { fontSize: 20, marginTop: spacing.xs },
+  word: { fontSize: 38, fontWeight: '900', marginTop: spacing.md },
+  translation: { fontSize: 22, marginTop: spacing.xs },
+  // Imagen grande estilo Duolingo para la palabra nueva.
+  introImage: {
+    width: 200,
+    height: 200,
+    borderRadius: 100,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: spacing.md,
+    marginBottom: spacing.sm,
+  },
+  introEmoji: { fontSize: 120, lineHeight: 140, textAlign: 'center' },
+  // Cuadrícula 2×2 de imágenes grandes para "elige la imagen".
+  imageGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+  imageOption: {
+    width: '48%',
+    aspectRatio: 1,
+    borderRadius: radius.md,
+    borderWidth: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: spacing.md,
+  },
+  imageOptionEmoji: { fontSize: 76, lineHeight: 92, textAlign: 'center' },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
   chip: {
     paddingHorizontal: spacing.md,
