@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { Animated, Easing, Pressable, StyleSheet, Text, View } from 'react-native';
 import Mascot from '../components/Mascot';
+import SplashBackground from '../components/SplashBackground';
 import { useSaludo } from '../components/SaludoContext';
 import { Button } from '../components/UI';
 import { useNavigation } from '../navigation';
@@ -60,10 +61,8 @@ export default function SplashScreen({ theme }: { theme: Theme }) {
   }, [dolphinY, titleOpacity, titleY, subtitleOpacity]);
 
   return (
-    <View style={[styles.container, { backgroundColor: '#2BB24C' }]}>
-      <View style={styles.sky}>
-        <Text style={styles.ambient}>🌿🦜🌺</Text>
-      </View>
+    <View style={[styles.container, { backgroundColor: theme.jungleDeep }]}>
+      <SplashBackground theme={theme} />
 
       {/* Ambas animaciones comparten recorte y tamaño: el cambio es invisible.
           La burbuja va superpuesta para no desplazar a Yaku. */}
@@ -129,13 +128,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: spacing.lg,
-  },
-  sky: {
-    marginBottom: spacing.md,
-  },
-  ambient: {
-    fontSize: 28,
-    letterSpacing: 8,
   },
   river: {
     width: '80%',
