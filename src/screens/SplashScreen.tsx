@@ -1,8 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { Animated, Easing, Pressable, StyleSheet, Text, View } from 'react-native';
 import Mascot from '../components/Mascot';
-import SpriteAnimado from '../components/SpriteAnimado';
-import { YAKU_SALUDO } from '../components/yakuSaludoAnim';
 import { useSaludo } from '../components/SaludoContext';
 import { Button } from '../components/UI';
 import { useNavigation } from '../navigation';
@@ -19,13 +17,7 @@ export default function SplashScreen({ theme }: { theme: Theme }) {
   // El saludo se maneja globalmente (la misma cámara sirve a todas las
   // pantallas). Aquí solo consumimos el estado para que el Yaku grande
   // responda. La cámara solo funciona en contexto seguro (HTTPS o localhost).
-  const {
-    saludando,
-    saludar,
-    terminarSaludo,
-    estadoCamara: camara,
-    activarCamara,
-  } = useSaludo();
+  const { saludando, saludar, estadoCamara: camara, activarCamara } = useSaludo();
 
   // Al saludar, Yaku crece con un resorte suave; al terminar, vuelve a su tamaño.
   useEffect(() => {
@@ -79,16 +71,7 @@ export default function SplashScreen({ theme }: { theme: Theme }) {
         style={{ transform: [{ translateY: dolphinY }, { scale: dolphinScale }] }}
       >
         <Pressable onPress={saludar} accessibilityRole="button" accessibilityLabel="Saludar a Yaku">
-          {saludando ? (
-            <SpriteAnimado
-              anim={YAKU_SALUDO}
-              size={185}
-              loop={false}
-              onEnd={terminarSaludo}
-            />
-          ) : (
-            <Mascot kind="yaku" size={185} />
-          )}
+          <Mascot kind="yaku" size={185} />
           {saludando && (
             <View style={styles.burbuja}>
               <Text style={styles.burbujaTexto}>¡Hola! 👋</Text>
