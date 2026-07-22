@@ -507,16 +507,16 @@ const styles = StyleSheet.create({
   translation: { fontSize: 22, marginTop: spacing.xs },
   // Imagen grande estilo Duolingo para la palabra nueva.
   introImage: {
-    width: 200,
-    height: 200,
-    borderRadius: 100,
+    width: 224,
+    height: 224,
+    borderRadius: 112,
     borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: spacing.md,
     marginBottom: spacing.sm,
   },
-  introEmoji: { fontSize: 132, lineHeight: 152, textAlign: 'center' },
+  introEmoji: { fontSize: 150, lineHeight: 172, textAlign: 'center' },
   // Cuadrícula 2×2 de imágenes grandes para "elige la imagen".
   imageGrid: {
     flexDirection: 'row',
@@ -532,7 +532,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: spacing.md,
   },
-  imageOptionEmoji: { fontSize: 96, lineHeight: 112, textAlign: 'center' },
+  imageOptionEmoji: { fontSize: 116, lineHeight: 132, textAlign: 'center' },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
   chip: {
     paddingHorizontal: spacing.md,
