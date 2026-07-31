@@ -63,15 +63,29 @@ export default function Mascot({ kind, mood = 'happy', size = 96, bounce = true 
   // Yaku), este Yaku responde con su animación de saludo, sin agregar ningún
   // elemento nuevo en pantalla.
   const { saludando, terminarSaludo } = useSaludo();
-  if (kind === 'yaku' && saludando) {
-    // El fotograma comparte recorte con la animación de reposo (algo más
-    // ancho que el personaje), así que se compensa para mantener el tamaño.
-    return <SpriteAnimado anim={YAKU_SALUDO} size={size * 1.22} loop={false} onEnd={terminarSaludo} />;
-  }
 
-  // Modo reposo de Yaku: la animación oficial (balanceo, guiño y risa).
-  if (kind === 'yaku' && bounce && mood === 'happy') {
-    return <YakuAnimado size={size * 1.22} />;
+  // Yaku siempre está vivo: en TODAS las pantallas usa su animación oficial
+  // (balanceo, guiño y risa), o la de saludo cuando corresponde. El fotograma
+  // comparte recorte en ambas animaciones (algo más ancho que el personaje),
+  // así que se compensa para mantener el tamaño visual.
+  if (kind === 'yaku') {
+    return (
+      <View>
+        {saludando ? (
+          <SpriteAnimado
+            anim={YAKU_SALUDO}
+            size={size * 1.22}
+            loop={false}
+            onEnd={terminarSaludo}
+          />
+        ) : (
+          <YakuAnimado size={size * 1.22} />
+        )}
+        {decor !== '' && (
+          <Text style={[styles.decor, { fontSize: Math.max(16, size * 0.24) }]}>{decor}</Text>
+        )}
+      </View>
+    );
   }
 
   return (
